@@ -1,0 +1,20 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<PropertyGroup>
+    <OpenTapVersion>9.19.0</OpenTapVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath> <!-- Removes the `netstandard2.0` from directory output -->
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish> <!-- Remove dependency on razor, this is required to run without the razor dependencies -->
+    <PreserveCompilationContext>false</PreserveCompilationContext> <!-- Does not copy refs folder that contains dependency that are already installed with OpenTAP -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies> <!-- Copies dependencies from nuget, this is required to run. Without them asp is not copied to output. -->
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+
+    <OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)</OutputPath>
+</PropertyGroup>
+
+<!-- Disable the two warnings that get spammed a billion times -->
+<PropertyGroup>
+  <NoWarn>$(NoWarn);NU1702;MSB3277;</NoWarn>
+</PropertyGroup>
+
+</Project>
