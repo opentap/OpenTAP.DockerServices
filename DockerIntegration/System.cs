@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -43,5 +44,29 @@ public class Maintenance
         }
 
         // docker image list | grep alpha | awk '{print $3}' | xarg -n1 docker rmi
+    }
+
+    public static void StopAllContainers(CancellationToken cancellationToken)
+    {
+        bool error = false;
+        var containers = new List<string>();
+        ProcessHelper.StartNew("docker", "ps -q", cancellationToken, s => { containers.Add(s); }, s => { error = true; });
+        if (error)
+            throw new Exception("Failed to get list of containers.");
+        
+        foreach (var container in containers)
+            ProcessHelper.StartNew("docker", $"stop {container}", cancellationToken, s => { }, s => { });
+    }
+
+    public static void RemoveAllContainers(CancellationToken cancellationToken)
+    {
+        bool error = false;
+        var containers = new List<string>();
+        ProcessHelper.StartNew("docker", "ps -aq", cancellationToken, s => { containers.Add(s); }, s => { error = true; });
+        if (error)
+            throw new Exception("Failed to get list of containers.");
+        
+        foreach (var container in containers)
+            ProcessHelper.StartNew("docker", $"rm {container}", cancellationToken, s => { }, s => { });
     }
 }
