@@ -11,4 +11,8 @@
     <AdditionalOpenTapPackage Include="TUI" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include=".github\workflows\ci.yml" />
+  </ItemGroup>
+
 </Project>

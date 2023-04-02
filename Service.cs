@@ -12,5 +12,4 @@ public interface IService : IResource
 [Display("Services", "Service Settings", null, -10000.0, false, null)]
 public class ServiceSettings : ComponentSettingsList<ServiceSettings, IService>
 {
-    public bool StartOnOpen { get; set; } = true;
 }

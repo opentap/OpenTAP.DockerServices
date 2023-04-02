@@ -9,7 +9,7 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
 
-    <OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)</OutputPath>
+<!--    <OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)</OutputPath>-->
 </PropertyGroup>
 
 <!-- Disable the two warnings that get spammed a billion times -->

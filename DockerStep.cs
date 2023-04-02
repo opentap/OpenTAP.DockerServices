@@ -4,11 +4,8 @@ using OpenTap;
 
 namespace OpenTAP.Docker;
 
-public class DockerService : Resource, IService
+public class DockerStep : TestStep
 {
-    private ContainerInstance? container;
-
-    public int Order { get; set; }
     public new string Name
     {
         get => base.Name;
@@ -20,17 +17,29 @@ public class DockerService : Resource, IService
     public List<VolumeMapping> Volumes { get; set; } = new List<VolumeMapping>();
     public List<KeyValue> Options { get; set; } = new List<KeyValue>();
     public List<KeyValue> Arguments { get; set; } = new List<KeyValue>();
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
 
-    public override void Open()
+    public bool PullOnPrePlanRun { get; set; } = true;
+    
+    private ContainerInstance container = null!;
+
+    public override void PrePlanRun()
     {
+        base.PrePlanRun();
+        
         if (Image == null)
             throw new Exception("Image is not set.");
-
+        
         container = new ContainerInstance(Name, Image, Ports, EnvironmentVariables, Volumes, Options, Arguments);
-        container.Start();
+        container.Timeout = Timeout;
+        
+        if (PullOnPrePlanRun)
+            container.Pull();
     }
-    public override void Close()
+
+    public override void Run()
     {
-        container?.Stop();
+        container.Start();
+        container.Stop();
     }
 }

@@ -1,20 +1,18 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
-using OpenTap;
 
 namespace OpenTAP.Docker;
 
 public class ProcessHelper
 {
-    public static void StartNew(string file, string args, Action<string> outputHandler, Action<string> errorHandler, TimeSpan timeout = default)
+    public static int StartNew(string file, string args, CancellationToken cancellationToken, Action<string> outputHandler, Action<string> errorHandler, TimeSpan timeout = default)
     {
         if (timeout == default)
             timeout = TimeSpan.FromSeconds(30);
         
         var startInfo = new ProcessStartInfo(file, args)
         {
-            // WorkingDirectory = cwd,
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -24,10 +22,7 @@ public class ProcessHelper
         var process = new Process();
         process.StartInfo = startInfo;
         
-        // foreach (var environmentVariable in env)
-        //     process.StartInfo.Environment.Add(environmentVariable.Name, environmentVariable.Value);
-        
-        var abortRegistration = TapThread.Current.AbortToken.Register(() =>
+        var cancellationRegistration = cancellationToken.Register(() =>
         {
             try
             {
@@ -43,16 +38,16 @@ public class ProcessHelper
                 if (!process.WaitForExit(500)) // give some time for the process to close by itself.
                     process.Kill();
             }
-            catch(Exception ex)
+            catch
             {
-                // Log.Warning("Caught exception when killing process. {0}", ex.Message);
+                // ignored
             }
         });
 
         using var OutputWaitHandle = new ManualResetEvent(false);
         using var ErrorWaitHandle = new ManualResetEvent(false);
         using (process)
-        using (abortRegistration)
+        using (cancellationRegistration)
         {
             process.OutputDataReceived += OutputDataRecv;
             process.ErrorDataReceived += ErrorDataRecv;
@@ -65,52 +60,29 @@ public class ProcessHelper
                 OutputWaitHandle.WaitOne((int)timeout.TotalMilliseconds) &&
                 ErrorWaitHandle.WaitOne((int)timeout.TotalMilliseconds))
             {
-                // var resultData = output.ToString();
-                // ProcessOutput(resultData);
+                return process.ExitCode;
             }
             else
             {
                 process.OutputDataReceived -= OutputDataRecv;
                 process.ErrorDataReceived -= ErrorDataRecv;
                 process.Kill();
+                return process.ExitCode == 0 ? -1 : process.ExitCode;
             }
-        
         
             void OutputDataRecv(object sender, DataReceivedEventArgs e)
             {
-                try
-                {
-                    if (e.Data == null)
-                    {
-                        OutputWaitHandle.Set();
-                    }
-                    else
-                    {
-                        outputHandler(e.Data);
-                    }
-                }
-                catch (ObjectDisposedException)
-                {
-                    // Suppress - Test plan has been aborted and process is disconnected
-                }
+                if (e.Data == null)
+                    OutputWaitHandle.Set();
+                else
+                    outputHandler(e.Data);
             }
             void ErrorDataRecv(object sender, DataReceivedEventArgs e)
             {
-                try
-                {
-                    if (e.Data == null)
-                    {
-                        ErrorWaitHandle.Set();
-                    }
-                    else
-                    {
-                        errorHandler(e.Data);
-                    }
-                }
-                catch (ObjectDisposedException)
-                {
-                    // Suppress - Test plan has been aborted and process is disconnected
-                }
+                if (e.Data == null)
+                    ErrorWaitHandle.Set();
+                else
+                    errorHandler(e.Data);
             }
         }
     }
