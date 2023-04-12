@@ -27,10 +27,14 @@ public class DockerService : Resource, IService
             throw new Exception("Image is not set.");
 
         container = new ContainerInstance(Name, Image, Ports, EnvironmentVariables, Volumes, Options, Arguments);
+        container.Timeout = TimeSpan.MaxValue;
+        container.WaitForExit = false;
+        Log.Info($"Starting service: {Name}");
         container.Start();
     }
     public override void Close()
     {
+        Log.Info($"Stopping service: {Name}");
         container?.Stop();
     }
 }

@@ -21,7 +21,7 @@ public class DockerServiceMonitor : ComponentSettings<DockerServiceMonitor>, ITe
 
     public void ExitTestPlanRun(TestPlanRun plan)
     {
-        ServiceSettings.Current.OrderBy(s => s.Order).ToList().ForEach(s => s.Close());
+        ServiceSettings.Current.OrderByDescending(s => s.Order).ToList().ForEach(s => s.Close());
         
         // Stop network
         ProcessHelper.StartNew("docker", "network rm opentap-service-network", TapThread.Current.AbortToken,

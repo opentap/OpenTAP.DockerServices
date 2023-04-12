@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using OpenTap;
 
 namespace OpenTAP.Docker;
@@ -16,7 +17,7 @@ public class ContainerInstance
     public List<KeyValue> Options { get; set; }
     public List<KeyValue> Arguments { get; set; }
 
-    public bool PrintToLog { get; set; } = true;
+    public bool WaitForExit { get; set; } = true;
     public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
 
     public ContainerInstance(string name, string image, List<Port> ports, List<KeyValue> environmentVariables, List<VolumeMapping> volumes, List<KeyValue> options, List<KeyValue> arguments)
@@ -58,11 +59,20 @@ public class ContainerInstance
             throw new Exception("Failed to start container. See log for details.");
 
         // Attach to logs
-        if (PrintToLog)
+        if (WaitForExit)
         {
             ProcessHelper.StartNew("docker", $"logs -f {Name}", TapThread.Current.AbortToken,
-                s => log.Info(s), 
+                s => log.Info(s),
                 s => log.Error(s), Timeout);
+        }
+        else
+        {
+            Task.Run(() =>
+            {
+                ProcessHelper.StartNew("docker", $"logs -f {Name}", TapThread.Current.AbortToken,
+                    s => log.Info(s),
+                    s => log.Error(s), Timeout);
+            });
         }
     }
     
