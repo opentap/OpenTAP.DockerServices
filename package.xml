@@ -1,18 +1,18 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<Package Name="Docker" xmlns="http://opentap.io/schemas/package" Version="$(GitVersion)" OS="Windows,Linux,Macos">
+<?xml version="1.0" encoding="UTF-8"?>
+<Package Name="Docker Services" xmlns="http://opentap.io/schemas/package" Version="$(GitVersion)" OS="Windows,Linux,Macos">
     <Description>
-        The OpenTAP Docker is a package that allows you to start docker containers from within OpenTAP. Either as a service that is started before the test starts, or as a step in the test sequence.
+        The OpenTAP Docker Services is a package that allows you to start docker containers from within OpenTAP. Either as a service that is started before the test starts, or as a step in the test sequence.
         <Status>Active Development</Status>
         <Links>
-            <Link Description="Go to the GitHub repository" Name="GitHub Repository" Url="https://github.com/opentap/OpenTAP.Docker"/>
+            <Link Description="Go to the GitHub repository" Name="GitHub Repository" Url="https://github.com/opentap/OpenTAP.DockerServices"/>
         </Links>
     </Description>
     <Dependencies>
     </Dependencies>
     <Owner>Stefan Holst</Owner>
-    <SourceUrl>https://github.com/opentap/OpenTAP.Docker</SourceUrl>
+    <SourceUrl>https://github.com/opentap/OpenTAP.DockerServices</SourceUrl>
     <Files>
-        <File Path="Packages/Docker/OpenTAP.Docker.dll">
+        <File Path="Packages/Docker Services/OpenTAP.Docker.dll">
             <SetAssemblyInfo Attributes="Version"/>
         </File>
     </Files>
