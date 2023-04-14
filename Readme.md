@@ -1,4 +1,4 @@
-﻿# OpenTAP Docker
+﻿# OpenTAP Docker Services
 
 The OpenTAP Docker is a package that allows you to start docker containers from within OpenTAP. 
 Either as a service that is started before the test starts, or as a step in the test sequence.
