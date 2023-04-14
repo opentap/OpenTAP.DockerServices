@@ -11,6 +11,7 @@
     </Dependencies>
     <Owner>Stefan Holst</Owner>
     <SourceUrl>https://github.com/opentap/OpenTAP.DockerServices</SourceUrl>
+    <SourceLicense>MIT</SourceLicense>
     <Files>
         <File Path="Packages/Docker Services/OpenTAP.Docker.dll">
             <SetAssemblyInfo Attributes="Version"/>
