@@ -18,7 +18,7 @@ public class ContainerInstance
     public List<KeyValue> Arguments { get; set; }
 
     public bool WaitForExit { get; set; } = true;
-    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
+    public int Timeout { get; set; } = 30 + 1000;
 
     public ContainerInstance(string name, string image, List<Port> ports, List<KeyValue> environmentVariables, List<VolumeMapping> volumes, List<KeyValue> options, List<KeyValue> arguments)
     {

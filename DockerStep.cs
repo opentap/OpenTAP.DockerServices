@@ -17,7 +17,7 @@ public class DockerStep : TestStep
     public List<VolumeMapping> Volumes { get; set; } = new List<VolumeMapping>();
     public List<KeyValue> Options { get; set; } = new List<KeyValue>();
     public List<KeyValue> Arguments { get; set; } = new List<KeyValue>();
-    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
+    public int Timeout { get; set; } = 30 * 1000;
 
     public bool PullOnPrePlanRun { get; set; } = true;
     

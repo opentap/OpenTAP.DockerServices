@@ -6,11 +6,11 @@ namespace OpenTAP.Docker;
 
 public class ProcessHelper
 {
-    public static int StartNew(string file, string args, CancellationToken cancellationToken, Action<string> outputHandler, Action<string> errorHandler, TimeSpan timeout = default)
+    public static int StartNew(string file, string args, CancellationToken cancellationToken, Action<string> outputHandler, Action<string> errorHandler, int? timeout = default)
     {
         if (timeout == default)
-            timeout = TimeSpan.FromSeconds(30);
-        
+            timeout = 30 * 1000;
+
         var startInfo = new ProcessStartInfo(file, args)
         {
             UseShellExecute = false,
@@ -21,7 +21,7 @@ public class ProcessHelper
         };
         var process = new Process();
         process.StartInfo = startInfo;
-        
+
         var cancellationRegistration = cancellationToken.Register(() =>
         {
             try
@@ -56,9 +56,9 @@ public class ProcessHelper
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
 
-            if (process.WaitForExit((int)timeout.TotalMilliseconds) &&
-                OutputWaitHandle.WaitOne((int)timeout.TotalMilliseconds) &&
-                ErrorWaitHandle.WaitOne((int)timeout.TotalMilliseconds))
+            if (process.WaitForExit((int)timeout) &&
+                OutputWaitHandle.WaitOne((int)timeout) &&
+                ErrorWaitHandle.WaitOne((int)timeout))
             {
                 return process.ExitCode;
             }

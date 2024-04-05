@@ -20,6 +20,7 @@ public class DockerService : Resource, IService
     public List<VolumeMapping> Volumes { get; set; } = new List<VolumeMapping>();
     public List<KeyValue> Options { get; set; } = new List<KeyValue>();
     public List<KeyValue> Arguments { get; set; } = new List<KeyValue>();
+    public int Timeout { get; set; } = int.MaxValue;
 
     public override void Open()
     {
@@ -27,7 +28,7 @@ public class DockerService : Resource, IService
             throw new Exception("Image is not set.");
 
         container = new ContainerInstance(Name, Image, Ports, EnvironmentVariables, Volumes, Options, Arguments);
-        container.Timeout = TimeSpan.MaxValue;
+        container.Timeout = Timeout;
         container.WaitForExit = false;
         Log.Info($"Starting service: {Name}");
         container.Start();
