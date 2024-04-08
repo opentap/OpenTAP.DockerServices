@@ -15,12 +15,13 @@ public class ContainerInstance
     public List<KeyValue> EnvironmentVariables { get; set; }
     public List<VolumeMapping> Volumes { get; set; }
     public List<KeyValue> Options { get; set; }
-    public List<KeyValue> Arguments { get; set; }
+    public string? Command { get; set; }
+    public string? Argument { get; set; }
 
     public bool WaitForExit { get; set; } = true;
     public int Timeout { get; set; } = 30 + 1000;
 
-    public ContainerInstance(string name, string image, List<Port> ports, List<KeyValue> environmentVariables, List<VolumeMapping> volumes, List<KeyValue> options, List<KeyValue> arguments)
+    public ContainerInstance(string name, string image, List<Port> ports, List<KeyValue> environmentVariables, List<VolumeMapping> volumes, List<KeyValue> options, string? command, string? argument)
     {
         Name = name;
         Image = image;
@@ -28,7 +29,8 @@ public class ContainerInstance
         EnvironmentVariables = environmentVariables;
         Volumes = volumes;
         Options = options;
-        Arguments = arguments;
+        Command = command;
+        Argument = argument;
         
         log = Log.CreateSource(Name);
     }
@@ -50,8 +52,7 @@ public class ContainerInstance
         var volArg = string.Join(" ", Volumes.Select(v => $"-v \"{v.Host}\":\"{v.Guest}\""));
         var portArg = string.Join(" ", Ports.Select(v => $"-p {v.Host}:{v.Guest}{(v.Type == PortType.TcpUdp ? "" : $"/{v.Type}")}"));
         var optionArg = string.Join(" ", Options.Select(o => $"--{o.Name} \"{o.Value}\""));
-        var argsArg = string.Join(" ", Arguments.Select(a => $"--{a.Name} \"{a.Value}\""));
-        var exitCode = ProcessHelper.StartNew("docker", $"run -dit --network opentap-service-network --name {Name} {optionArg} {envArg} {volArg} {portArg} {Image} {argsArg}", TapThread.Current.AbortToken,
+        var exitCode = ProcessHelper.StartNew("docker", $"run -dit --network opentap-service-network --name {Name} {optionArg} {envArg} {volArg} {portArg} {Image} {Command} {Argument}", TapThread.Current.AbortToken,
             s => log.Info($"Started {Name} ({Image}): {s}"), 
             s => log.Error($"Starting {Name} ({Image}): {s}"), Timeout);
 
